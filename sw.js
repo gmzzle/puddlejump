@@ -1,5 +1,5 @@
 // Puddlejump service worker: app shell cached for offline play.
-const VERSION = "puddlejump-v1";
+const VERSION = "puddlejump-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/icon.svg"];
 
 self.addEventListener("install", e => {
