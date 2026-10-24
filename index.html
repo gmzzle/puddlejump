@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Puddlejump</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#1F8A8A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Puddlejump">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Andika:wght@400;700&display=swap">
+<style>
+/* Layout: one full-height app shell; a pond-water ground, lily-pad activity tiles, a frog guide who talks. Single bright look by choice. */
+:root{
+  --water:#DDF2EE; --water-deep:#BFE6DF;
+  --pond:#1F8A8A; --pond-dark:#166B6B;
+  --lily:#8BCB5A; --lily-dark:#5E9E35;
+  --sun:#FFC93C; --coral:#FF7A5C; --berry:#8E6CE0; --sky:#4AA8F0;
+  --ink:#23324A; --ink-soft:#56657D; --card:#FFFFFF; --line:#C9E4DE;
+  --good:#3BAA5C; --bad:#E5534B;
+  --display:"Baloo 2","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  --read:"Andika","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+  --r:22px;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--water);color:var(--ink);font-family:var(--read);font-size:18px;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overflow-x:hidden;
+  background-image:radial-gradient(circle at 12% 88%,var(--water-deep) 0 60px,transparent 61px),
+  radial-gradient(circle at 92% 18%,var(--water-deep) 0 40px,transparent 41px)}
+#app{min-height:100%;display:flex;flex-direction:column;max-width:900px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 24px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.05;text-wrap:balance}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:10px;min-height:56px}
+.bar .grow{flex:1;min-width:0}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border-radius:999px;padding:6px 14px 6px 6px;
+  font-family:var(--display);font-weight:800;font-size:18px;box-shadow:0 3px 0 var(--line)}
+.ava{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:18px;flex:none}
+.stars{display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:800;font-size:20px;box-shadow:0 3px 0 #D9A51F;font-variant-numeric:tabular-nums}
+.iconbtn{width:48px;height:48px;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:0 3px 0 var(--line);flex:none}
+.iconbtn svg{width:24px;height:24px}
+
+/* hero */
+.hello{display:flex;align-items:flex-end;gap:12px;margin:14px 0 18px}
+.frog{flex:none;width:110px;height:auto}
+.frog.small{width:72px}
+.bubble{position:relative;background:var(--card);border-radius:var(--r);padding:14px 18px;font-family:var(--display);font-weight:600;font-size:22px;line-height:1.2;box-shadow:0 4px 0 var(--line);min-width:0;margin-bottom:18px}
+.bubble::before{content:"";position:absolute;left:-10px;bottom:16px;border:10px solid transparent;border-right-color:var(--card);border-left:0}
+.bubble b{color:var(--pond)}
+
+/* activity pads */
+.pads{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.pad{position:relative;background:var(--c);border-radius:28px 28px 28px 8px;padding:16px 14px 14px;text-align:left;color:#fff;
+  box-shadow:0 6px 0 var(--d);display:flex;flex-direction:column;gap:6px;min-height:150px;transition:transform .12s}
+.pad:active{transform:translateY(4px);box-shadow:0 2px 0 var(--d)}
+.pad .glyph{font-family:var(--read);font-weight:700;font-size:40px;line-height:1;height:52px;display:flex;align-items:center}
+.pad .glyph svg{height:46px;width:auto}
+.pad h3{font-size:24px}
+.pad p{margin:0;font-size:14px;opacity:.92;line-height:1.25}
+.pad .best{position:absolute;top:12px;right:12px;font-family:var(--display);font-weight:800;font-size:13px;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 9px}
+
+/* game */
+.game{flex:1;display:flex;flex-direction:column}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.dots i.on{background:var(--lily);box-shadow:none}
+.dots i.miss{background:var(--sun);box-shadow:none}
+.dots i.now{box-shadow:inset 0 0 0 3px var(--pond)}
+.prompt{display:flex;align-items:center;gap:12px;margin:12px 0}
+.prompt .bubble{flex:1;margin:0}
+.say{width:56px;height:56px;border-radius:50%;background:var(--pond);color:#fff;display:grid;place-items:center;box-shadow:0 4px 0 var(--pond-dark);flex:none}
+.say svg{width:28px;height:28px}
+.show{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;min-height:120px;margin:8px 0 16px;text-align:center}
+.big-letter{font-family:var(--read);font-weight:700;font-size:min(30vw,150px);line-height:1;color:var(--pond)}
+.big-word{font-family:var(--read);font-weight:700;font-size:min(14vw,64px);letter-spacing:.04em;color:var(--ink)}
+.big-pic{font-size:min(28vw,130px);line-height:1}
+.count-pic{font-size:min(11vw,52px);line-height:1}
+.sum{font-family:var(--display);font-weight:800;font-size:min(16vw,76px);color:var(--ink);font-variant-numeric:tabular-nums}
+.opts{display:grid;gap:14px;grid-template-columns:repeat(var(--n,3),1fr);margin-top:auto}
+@media (max-width:520px){.opts.four{grid-template-columns:repeat(2,1fr)}}
+.opt{background:var(--card);border-radius:var(--r);min-height:110px;display:grid;place-items:center;padding:10px;
+  box-shadow:0 6px 0 var(--line);transition:transform .12s,background .2s;font-family:var(--read);font-weight:700;font-size:44px;color:var(--ink)}
+.opt .e{font-size:58px;line-height:1}
+.opt .w{display:block;font-size:16px;margin-top:4px;color:var(--ink-soft)}
+.opt svg{width:76px;height:76px}
+.opt:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.opt.right{background:var(--lily);color:#fff;box-shadow:0 6px 0 var(--lily-dark);animation:pop .4s}
+.opt.right .w{color:#fff}
+.opt.wrong{opacity:.35;animation:shake .4s}
+@keyframes pop{50%{transform:scale(1.08)}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+/* spelling */
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 18px}
+.slot{width:min(14vw,62px);height:min(16vw,72px);border-radius:14px;background:var(--card);border-bottom:5px solid var(--line);
+  display:grid;place-items:center;font-family:var(--read);font-weight:700;font-size:min(10vw,44px);color:var(--pond)}
+.slot.filled{animation:pop .3s}
+.slot.next{border-bottom-color:var(--sun)}
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:auto}
+.tile{width:min(17vw,76px);height:min(17vw,76px);border-radius:18px;background:var(--sun);box-shadow:0 5px 0 #D9A51F;
+  font-family:var(--read);font-weight:700;font-size:min(10vw,42px);color:var(--ink)}
+.tile.used{visibility:hidden}
+.tile.wrong{animation:shake .4s}
+
+/* memory */
+.mem{display:grid;gap:10px;grid-template-columns:repeat(var(--cols),1fr);margin-top:8px}
+.card{aspect-ratio:3/4;max-width:100%;perspective:600px}
+.card .in{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
+.card.up .in,.card.done .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:16px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.card .f{background:var(--pond);box-shadow:0 4px 0 var(--pond-dark);background-image:radial-gradient(circle at 50% 50%,var(--lily) 0 22%,transparent 23%)}
+.card .b{background:var(--card);box-shadow:0 4px 0 var(--line);transform:rotateY(180deg);flex-direction:column;font-size:min(9vw,46px);line-height:1}
+.card .b small{font-size:13px;font-family:var(--read);color:var(--ink-soft);margin-top:4px}
+.card.done .b{background:#EAF7DF}
+
+/* end screen */
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.center h1{font-size:44px;color:var(--pond)}
+.earned{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.earned svg{width:44px;height:44px;animation:pop .5s backwards}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{background:var(--pond);color:#fff;font-family:var(--display);font-weight:800;font-size:22px;border-radius:999px;padding:12px 26px;box-shadow:0 5px 0 var(--pond-dark)}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:0 5px 0 var(--line)}
+.btn.warn{background:var(--bad);box-shadow:0 5px 0 #B73A33}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.newsticker{background:var(--card);border-radius:var(--r);padding:12px 20px;box-shadow:0 4px 0 var(--line);font-family:var(--display);font-weight:800;font-size:20px}
+.newsticker span{font-size:48px;display:block;line-height:1.1}
+
+/* stickers */
+.book{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px;margin-top:12px}
+.stk{aspect-ratio:1;background:var(--card);border-radius:20px;display:grid;place-items:center;font-size:44px;box-shadow:0 4px 0 var(--line)}
+.stk.locked{background:var(--water-deep);box-shadow:none;font-family:var(--display);font-size:16px;color:var(--ink-soft);font-weight:800}
+.note{color:var(--ink-soft);font-size:16px;margin:6px 0 0}
+
+/* profiles */
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:16px}
+.kid{background:var(--card);border-radius:var(--r);padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 5px 0 var(--line)}
+.kid .ava{width:72px;height:72px;font-size:34px}
+.kid b{font-family:var(--display);font-size:22px}
+.kid small{color:var(--ink-soft);font-size:14px}
+
+/* parent */
+.panel{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 4px 0 var(--line);margin-top:14px}
+.panel h2{font-size:24px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .grow{flex:1;min-width:140px}
+.field{font:inherit;font-size:18px;border:2px solid var(--line);border-radius:12px;padding:8px 12px;width:100%;max-width:240px;color:var(--ink);background:var(--card)}
+.seg{display:inline-flex;background:var(--water);border-radius:999px;padding:4px}
+.seg button{padding:6px 14px;border-radius:999px;font-family:var(--display);font-weight:800;font-size:16px;color:var(--ink-soft)}
+.seg button.on{background:var(--pond);color:#fff}
+.small{font-size:15px;padding:8px 16px}
+table.stats{width:100%;border-collapse:collapse;font-size:16px;font-variant-numeric:tabular-nums}
+table.stats th,table.stats td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.stats th{font-family:var(--display);font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft)}
+.tablewrap{overflow-x:auto}
+.pin{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center}
+.pin button{height:64px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-family:var(--display);font-weight:800;font-size:28px}
+.pinshow{font-family:var(--display);font-weight:800;font-size:40px;min-height:52px;letter-spacing:.1em;font-variant-numeric:tabular-nums}
+
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:20}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app"></div>
+<canvas class="confetti" id="confetti"></canvas>
+
+<script>
+(()=>{
+"use strict";
+/* ---------- content ---------- */
+const LETTERS=[["A","apple","🍎"],["B","bear","🐻"],["C","cat","🐱"],["D","dog","🐶"],["E","egg","🥚"],["F","fish","🐟"],["G","grapes","🍇"],["H","horse","🐴"],["I","ice cream","🍦"],["J","juice","🧃"],["K","kite","🪁"],["L","lion","🦁"],["M","moon","🌙"],["N","nest","🪺"],["O","octopus","🐙"],["P","pig","🐷"],["Q","queen","👸"],["R","rabbit","🐰"],["S","sun","☀️"],["T","tree","🌳"],["U","umbrella","☂️"],["V","violin","🎻"],["W","whale","🐳"],["Y","yo-yo","🪀"],["Z","zebra","🦓"]];
+const WORDS_LITTLE=[["CAT","🐱"],["DOG","🐶"],["SUN","☀️"],["PIG","🐷"],["BUS","🚌"],["HAT","👒"],["BEE","🐝"],["FOX","🦊"],["COW","🐮"],["EGG","🥚"],["BED","🛏️"],["CAR","🚗"],["BAT","🦇"],["ANT","🐜"]];
+const WORDS_BIG=[["FROG","🐸"],["FISH","🐟"],["STAR","⭐"],["MOON","🌙"],["DUCK","🦆"],["BIRD","🐦"],["TREE","🌳"],["SHIP","🚢"],["APPLE","🍎"],["HORSE","🐴"],["TRAIN","🚂"],["SNAKE","🐍"],["TIGER","🐯"],["ROBOT","🤖"],["ROCKET","🚀"],["BANANA","🍌"],["TURTLE","🐢"],["RABBIT","🐰"],["PENGUIN","🐧"],["DRAGON","🐉"],["CASTLE","🏰"],["PLANET","🪐"]];
+const VOCAB={
+ animals:[["elephant","🐘"],["giraffe","🦒"],["monkey","🐒"],["penguin","🐧"],["owl","🦉"],["turtle","🐢"],["octopus","🐙"],["butterfly","🦋"],["snail","🐌"],["crab","🦀"],["kangaroo","🦘"],["parrot","🦜"],["hedgehog","🦔"],["shark","🦈"],["camel","🐫"],["peacock","🦚"]],
+ food:[["banana","🍌"],["carrot","🥕"],["strawberry","🍓"],["broccoli","🥦"],["watermelon","🍉"],["corn","🌽"],["pineapple","🍍"],["bread","🍞"],["cherries","🍒"],["pear","🍐"],["avocado","🥑"],["pumpkin","🎃"]],
+ things:[["bicycle","🚲"],["airplane","✈️"],["umbrella","☂️"],["guitar","🎸"],["drum","🥁"],["ball","⚽"],["book","📖"],["key","🔑"],["clock","⏰"],["balloon","🎈"],["tent","⛺"],["lighthouse","🗼"],["helicopter","🚁"],["scissors","✂️"]]
+};
+const COUNT_PICS=["🍎","🐟","⭐","🐞","🌼","🦆","🍓","🎈","🐸","🧁"];
+const COUNT_NAMES={"🍎":"apples","🐟":"fish","⭐":"stars","🐞":"ladybugs","🌼":"flowers","🦆":"ducks","🍓":"strawberries","🎈":"balloons","🐸":"frogs","🧁":"cupcakes"};
+const COLORS=[["red","#E5484D"],["blue","#3E8EF0"],["yellow","#F5C518"],["green","#45B24E"],["purple","#8E5BD8"],["orange","#FF8A2A"]];
+const SHAPES=["circle","square","triangle","star","heart","diamond"];
+const STICKERS=["🦄","🐬","🦋","🌈","🚀","🦖","🐙","🍉","🌻","🐝","🦉","🐢","🎈","🌟","🦜","🐳","🍄","🏰","⛵","🦒","🐼","🌵","🎨","🏆"];
+const STARS_PER_STICKER=5;
+const PRAISE=["Great job!","You got it!","Super!","Ribbit! That's right!","Awesome!","Well done!","Yes!","Brilliant!"];
+const TRY=["Almost! Try again.","Ooh, not that one.","Hop again!","Try another one."];
+const AVA_COLORS=["#FF7A5C","#8E6CE0","#4AA8F0","#1F8A8A","#E58A00","#D9467A"];
+
+const ACTS=[
+ {id:"letters",name:"Letter Lagoon",blurb:"Letters and the sounds they start",c:"#1F8A8A",d:"#166B6B",glyph:"Aa"},
+ {id:"spell",name:"Spelling Splash",blurb:"Build words one letter at a time",c:"#FF7A5C",d:"#D85A3E",glyph:"c·a·t"},
+ {id:"numbers",name:"Number Ripples",blurb:"Counting, adding and more",c:"#4AA8F0",d:"#2E84C8",glyph:"1+2"},
+ {id:"shapes",name:"Shape Shore",blurb:"Colours and shapes",c:"#8E6CE0",d:"#6D4DBD",glyph:"shapes"},
+ {id:"listen",name:"Listen & Find",blurb:"Hear a word, find the picture",c:"#E58A00",d:"#B96E00",glyph:"ear"},
+ {id:"memory",name:"Memory Pond",blurb:"Flip cards and find pairs",c:"#5E9E35",d:"#467A26",glyph:"cards"}
+];
+
+/* ---------- state ---------- */
+const KEY="puddlejump.v1";
+const defaults=()=>({profiles:[
+  {id:"p1",name:"Little Explorer",level:"little",color:AVA_COLORS[0],stars:0,stats:{}},
+  {id:"p2",name:"Big Explorer",level:"big",color:AVA_COLORS[1],stars:0,stats:{}}],
+  current:null,settings:{rate:0.9,sound:true,voice:true}});
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||defaults()}catch(e){S=defaults()}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const me=()=>S.profiles.find(p=>p.id===S.current);
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const sample=(a,n)=>shuffle(a).slice(0,n);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+
+/* speech */
+let voice=null;
+function pickVoice(){
+  if(!("speechSynthesis" in window))return;
+  const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+  voice=vs.find(v=>/en-CA/i.test(v.lang))||vs.find(v=>/Samantha|Google US|Jenny|Aria/i.test(v.name))||vs.find(v=>/en-US/i.test(v.lang))||vs[0]||null;
+}
+if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){
+  if(!S.settings.voice||!("speechSynthesis" in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=S.settings.rate;u.pitch=1.15;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}
+}
+/* sound effects */
+let ac=null;
+function tone(freqs,dur=.12,type="sine",vol=.18){
+  if(!S.settings.sound)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;
+      const t=ac.currentTime+i*dur;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+dur*1.6);
+      o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur*1.7)})}catch(e){}
+}
+const sfx={good:()=>tone([660,880]),bad:()=>tone([220,180],.14,"triangle",.12),tap:()=>tone([520],.06,"sine",.1),win:()=>tone([523,659,784,1046],.13),flip:()=>tone([400],.05,"triangle",.08)};
+
+/* svg bits */
+const ICON={
+ speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+ lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6"/></svg>',
+ ear:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-6 0"/><path d="M10 10a2 2 0 0 1 4 0"/></svg>',
+ cards:'<svg viewBox="0 0 40 30"><rect x="2" y="4" width="16" height="22" rx="3" fill="#fff" transform="rotate(-8 10 15)"/><rect x="20" y="4" width="16" height="22" rx="3" fill="#fff" opacity=".85" transform="rotate(8 28 15)"/><circle cx="28" cy="15" r="4" fill="#5E9E35"/></svg>'
+};
+function starSVG(fill="#FFC93C"){return `<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${fill}" stroke="#D9A51F" stroke-width="1.2" stroke-linejoin="round"/></svg>`}
+function shapeSVG(shape,color){
+  const p={circle:'<circle cx="50" cy="50" r="40"/>',square:'<rect x="14" y="14" width="72" height="72" rx="6"/>',
+   triangle:'<path d="M50 10 92 86H8z" stroke-linejoin="round"/>',
+   star:'<path d="M50 6l12.6 26 28.4 3.9-20.7 19.9 5.1 28.2L50 70.6 24.6 84l5.1-28.2L9 35.9l28.4-3.9z"/>',
+   heart:'<path d="M50 88S10 62 10 34a20 20 0 0 1 40-6 20 20 0 0 1 40 6c0 28-40 54-40 54z"/>',
+   diamond:'<path d="M50 6 90 50 50 94 10 50z"/>'}[shape];
+  return `<svg viewBox="0 0 100 100"><g fill="${color}" stroke="rgba(0,0,0,.18)" stroke-width="3">${p}</g></svg>`;
+}
+function frogSVG(cls="",mood="happy"){
+  const mouth=mood==="wow"?'<ellipse cx="60" cy="74" rx="9" ry="10" fill="#23324A"/>':'<path d="M44 70q16 16 32 0" fill="none" stroke="#23324A" stroke-width="5" stroke-linecap="round"/>';
+  return `<svg class="frog ${cls}" viewBox="0 0 120 110" aria-hidden="true">
+   <ellipse cx="60" cy="104" rx="46" ry="6" fill="rgba(31,138,138,.25)"/>
+   <ellipse cx="30" cy="96" rx="16" ry="8" fill="#5E9E35"/><ellipse cx="90" cy="96" rx="16" ry="8" fill="#5E9E35"/>
+   <ellipse cx="60" cy="68" rx="46" ry="34" fill="#8BCB5A"/>
+   <ellipse cx="60" cy="80" rx="28" ry="16" fill="#C7E8A6"/>
+   <circle cx="38" cy="34" r="18" fill="#8BCB5A"/><circle cx="82" cy="34" r="18" fill="#8BCB5A"/>
+   <circle cx="38" cy="33" r="12" fill="#fff"/><circle cx="82" cy="33" r="12" fill="#fff"/>
+   <circle class="eye" cx="40" cy="35" r="6.5" fill="#23324A"/><circle class="eye" cx="80" cy="35" r="6.5" fill="#23324A"/>
+   <circle cx="42" cy="32" r="2.2" fill="#fff"/><circle cx="82" cy="32" r="2.2" fill="#fff"/>
+   <circle cx="32" cy="66" r="6" fill="#FF9C86" opacity=".8"/><circle cx="88" cy="66" r="6" fill="#FF9C86" opacity=".8"/>
+   ${mouth}
+   <path d="M44 14q-2-10 6-12" fill="none" stroke="#FFC93C" stroke-width="4" stroke-linecap="round"/>
+  </svg>`;
+}
+function padGlyph(a){
+  if(a.glyph==="shapes")return `<svg viewBox="0 0 120 50"><circle cx="22" cy="25" r="18" fill="#FFC93C"/><path d="M60 7 80 43H40z" fill="#fff"/><rect x="88" y="9" width="32" height="32" rx="4" fill="#FF7A5C"/></svg>`;
+  if(a.glyph==="ear")return ICON.ear.replace('viewBox','style="height:46px;width:46px" viewBox');
+  if(a.glyph==="cards")return ICON.cards;
+  return esc(a.glyph);
+}
+
+/* ---------- confetti ---------- */
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cv=$("#confetti"),cx=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=["#FFC93C","#FF7A5C","#8BCB5A","#4AA8F0","#8E6CE0"];
+  const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,r:Math.random()*6.3,s:6+Math.random()*8,c:pick(cols)}));
+  let t=0;(function f(){cx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=.1;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);cx.restore()});
+    if(++t<180)requestAnimationFrame(f);else cx.clearRect(0,0,cv.width,cv.height)})();
+}
+
+/* ---------- screens ---------- */
+let screen="home";
+function topBar(left){
+  const p=me();
+  return `<div class="bar">${left}<div class="grow"></div>
+   <span class="stars" aria-label="${p.stars} stars">${starSVG().replace('<svg','<svg width="22" height="22"')} ${p.stars}</span>
+   <button class="iconbtn" data-go="stickers" aria-label="Sticker book">${ICON.book}</button>
+   <button class="iconbtn" data-go="gate" aria-label="Grown-ups">${ICON.lock}</button></div>`;
+}
+function avatar(p,size=""){return `<span class="ava" style="background:${p.color};${size}">${esc(p.name.trim()[0]||"?").toUpperCase()}</span>`}
+
+function renderWho(){
+  screen="who";
+  app.innerHTML=`<div class="hello">${frogSVG()}<div class="bubble">Hi! I'm <b>Juniper</b>. Who's playing today?</div></div>
+   <div class="who">${S.profiles.map(p=>`<button class="kid" data-kid="${p.id}">${avatar(p)}<b>${esc(p.name)}</b><small>${p.level==="big"?"Big hops (ages 7–9)":"Little hops (ages 4–6)"} · ${p.stars} stars</small></button>`).join("")}</div>
+   <p class="note" style="margin-top:18px">Grown-ups can rename players and change levels in the Grown-ups area (lock button, once a player is picked).</p>`;
+}
+function renderHome(){
+  screen="home";const p=me();
+  const greet=pick([`Hi ${p.name}! What should we play?`,`Ribbit! Ready to hop, ${p.name}?`,`Pick a pond, ${p.name}!`]);
+  app.innerHTML=topBar(`<button class="chip" data-go="who" aria-label="Switch player">${avatar(p)}${esc(p.name)}</button>`)+
+   `<div class="hello">${frogSVG()}<div class="bubble">${esc(greet)}</div></div>
+   <div class="pads">${ACTS.map(a=>{const st=p.stats[a.id];return `<button class="pad" style="--c:${a.c};--d:${a.d}" data-play="${a.id}">
+     ${st&&st.played?`<span class="best">${st.played}× played</span>`:""}
+     <span class="glyph">${padGlyph(a)}</span><h3>${a.name}</h3><p>${a.blurb}</p></button>`}).join("")}</div>`;
+  speak(greet);
+}
+function renderStickers(){
+  screen="stickers";const p=me();const have=Math.min(STICKERS.length,Math.floor(p.stars/STARS_PER_STICKER));
+  const toNext=STARS_PER_STICKER-(p.stars%STARS_PER_STICKER);
+  app.innerHTML=topBar(`<button class="iconbtn" data-go="home" aria-label="Back">${ICON.back}</button><h2 style="font-size:28px">Sticker Book</h2>`)+
+   `<p class="note">${have<STICKERS.length?`${have} of ${STICKERS.length} stickers. ${toNext} more ${toNext===1?"star":"stars"} for the next one!`:"Every sticker collected. Amazing!"}</p>
+   <div class="book">${STICKERS.map((s,i)=>i<have?`<button class="stk" data-sticker="${i}">${s}</button>`:`<div class="stk locked">${(i+1)*STARS_PER_STICKER}★</div>`).join("")}</div>`;
+  speak(have?`You have ${have} stickers!`:`Earn stars to collect stickers!`);
+}
+
+/* ----- grown-up gate & parent zone ----- */
+let gate={a:0,b:0,v:""};
+function renderGate(){
+  screen="gate";gate={a:6+rnd(7),b:6+rnd(7),v:""};
+  app.innerHTML=`<div class="bar"><button class="iconbtn" data-go="home" aria-label="Back">${ICON.back}</button></div>
+   <div class="center"><h1 style="font-size:32px;color:var(--ink)">Grown-ups only</h1><p style="margin:0">What is ${gate.a} + ${gate.b}?</p>
+   <div class="pinshow" id="pinshow">&nbsp;</div>
+   <div class="pin">${[1,2,3,4,5,6,7,8,9,"⌫",0,"OK"].map(k=>`<button data-pin="${k}">${k}</button>`).join("")}</div></div>`;
+}
+function renderParent(){
+  screen="parent";const p=me();
+  const rows=ACTS.map(a=>{const s=p.stats[a.id]||{played:0,correct:0,total:0};return `<tr><td>${a.name}</td><td>${s.played}</td><td>${s.total?Math.round(100*s.correct/s.total)+"%":"–"}</td></tr>`}).join("");
+  app.innerHTML=`<div class="bar"><button class="iconbtn" data-go="home" aria-label="Back">${ICON.back}</button><h2 style="font-size:28px">Grown-ups</h2></div>
+   <div class="panel"><h2>Players</h2>
+   ${S.profiles.map(q=>`<div class="row">${avatar(q)}<div class="grow"><input class="field" id="name-${q.id}" data-name="${q.id}" value="${esc(q.name)}" maxlength="16" aria-label="Player name"></div>
+     <span class="seg" role="group" aria-label="Level"><button class="${q.level==="little"?"on":""}" data-level="${q.id}:little">Little 4–6</button><button class="${q.level==="big"?"on":""}" data-level="${q.id}:big">Big 7–9</button></span>
+     ${S.profiles.length>1?`<button class="btn alt small" data-del="${q.id}">Remove</button>`:""}</div>`).join("")}
+   <div class="row"><button class="btn small" data-add="1">Add a player</button></div></div>
+   <div class="panel"><h2>${esc(p.name)}'s progress</h2><p class="note" style="margin:0 0 8px">${p.stars} stars · ${Math.min(STICKERS.length,Math.floor(p.stars/STARS_PER_STICKER))} stickers</p>
+   <div class="tablewrap"><table class="stats"><thead><tr><th>Activity</th><th>Rounds</th><th>First-try correct</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+   <div class="panel"><h2>Sound</h2>
+    <div class="row"><div class="grow">Juniper's voice</div><span class="seg"><button class="${S.settings.voice?"on":""}" data-set="voice:1">On</button><button class="${!S.settings.voice?"on":""}" data-set="voice:0">Off</button></span></div>
+    <div class="row"><div class="grow">Talking speed</div><span class="seg"><button class="${S.settings.rate<.85?"on":""}" data-set="rate:0.75">Slow</button><button class="${S.settings.rate>=.85&&S.settings.rate<1?"on":""}" data-set="rate:0.9">Normal</button><button class="${S.settings.rate>=1?"on":""}" data-set="rate:1.05">Quick</button></span></div>
+    <div class="row"><div class="grow">Sound effects</div><span class="seg"><button class="${S.settings.sound?"on":""}" data-set="sound:1">On</button><button class="${!S.settings.sound?"on":""}" data-set="sound:0">Off</button></span></div>
+   </div>
+   <div class="panel"><h2>Reset</h2><div class="row"><div class="grow">Clear ${esc(p.name)}'s stars, stickers and progress.</div><button class="btn warn small" data-reset="ask" id="resetbtn">Reset progress</button></div></div>
+   <p class="note" style="text-align:center;margin-top:16px">Progress is saved on this device only.</p>`;
+}
+
+/* ---------- question generators ---------- */
+function qLetters(level){
+  const t=pick(LETTERS);
+  if(level==="big"&&Math.random()<.5){
+    const opts=shuffle([t,...sample(LETTERS.filter(l=>l!==t),3)]);
+    return {say:`${cap(t[1])}. What letter does ${t[1]} start with?`,text:`What letter does <b>${t[1]}</b> start with?`,
+      show:`<span class="big-pic">${t[2]}</span>`,
+      opts:opts.map(o=>({html:`${o[0]}${o[0].toLowerCase()}`,ok:o===t,say:o[0]})),win:`${t[0]} is for ${t[1]}!`};
+  }
+  const n=level==="big"?4:3;
+  const opts=shuffle([t,...sample(LETTERS.filter(l=>l!==t),n-1)]);
+  return {say:`${t[0]}. ${t[0]} is for ${t[1]}. Which one starts with ${t[0]}?`,text:`Which one starts with <b>${t[0]}</b>?`,
+    show:`<span class="big-letter">${t[0]}${t[0].toLowerCase()}</span>`,
+    opts:opts.map(o=>({html:`<span><span class="e">${o[2]}</span><span class="w">${o[1]}</span></span>`,ok:o===t,say:o[1]})),win:`${t[1]} starts with ${t[0]}!`};
+}
+function numOpts(ans,n,min=0){
+  const s=new Set([ans]);let guard=0;
+  while(s.size<n&&guard++<100){const d=ans+(rnd(7)-3);if(d>=min&&d!==ans)s.add(d)}
+  while(s.size<n)s.add(ans+s.size);
+  return shuffle([...s]);
+}
+function qNumbers(level){
+  if(level==="little"){
+    if(Math.random()<.7){
+      const n=1+rnd(10),e=pick(COUNT_PICS);
+      return {say:`How many ${COUNT_NAMES[e]}? Count them!`,text:`How many <b>${COUNT_NAMES[e]}</b>?`,
+        show:Array(n).fill(`<span class="count-pic">${e}</span>`).join(""),
+        opts:numOpts(n,3,1).map(v=>({html:v,ok:v===n,say:String(v)})),win:`${n}!`};
+    }
+    const a=1+rnd(5),b=1+rnd(4),e=pick(COUNT_PICS);
+    return {say:`${a} plus ${b}. How many altogether?`,text:`${a} + ${b} = ?`,
+      show:`<span>${Array(a).fill(`<span class="count-pic">${e}</span>`).join("")}</span><span class="sum">+</span><span>${Array(b).fill(`<span class="count-pic">${e}</span>`).join("")}</span>`,
+      opts:numOpts(a+b,3,1).map(v=>({html:v,ok:v===a+b,say:String(v)})),win:`${a} plus ${b} is ${a+b}!`};
+  }
+  const k=rnd(3);let a,b,ans,sym,word;
+  if(k===0){a=3+rnd(18);b=2+rnd(15);ans=a+b;sym="+";word="plus"}
+  else if(k===1){a=8+rnd(18);b=1+rnd(a-2);ans=a-b;sym="−";word="minus"}
+  else{a=2+rnd(9);b=2+rnd(9);ans=a*b;sym="×";word="times"}
+  return {say:`What is ${a} ${word} ${b}?`,text:`What is ${a} ${sym} ${b}?`,show:`<span class="sum">${a} ${sym} ${b} = ?</span>`,
+    opts:numOpts(ans,4,0).map(v=>({html:v,ok:v===ans,say:String(v)})),win:`${a} ${word} ${b} is ${ans}!`};
+}
+function qShapes(level){
+  const tc=pick(COLORS),ts=pick(SHAPES),n=level==="big"?4:3;
+  const combos=[[tc,ts]];const key=c=>c[0][0]+c[1];const seen=new Set([key(combos[0])]);
+  if(level==="big"){ // tricky distractors: same colour or same shape
+    const c1=[tc,pick(SHAPES.filter(s=>s!==ts))],c2=[pick(COLORS.filter(c=>c!==tc)),ts];
+    [c1,c2].forEach(c=>{if(!seen.has(key(c))){seen.add(key(c));combos.push(c)}});
+  }
+  let g=0;while(combos.length<n&&g++<200){
+    const c=level==="big"?[pick(COLORS),pick(SHAPES)]:[pick(COLORS.filter(x=>!combos.some(y=>y[0]===x))),pick(SHAPES.filter(x=>!combos.some(y=>y[1]===x)))];
+    if(c[0]&&c[1]&&!seen.has(key(c))){seen.add(key(c));combos.push(c)}
+  }
+  return {say:`Tap the ${tc[0]} ${ts}!`,text:`Tap the <b style="color:${tc[1]}">${tc[0]}</b> <b>${ts}</b>`,show:"",
+    opts:shuffle(combos).map(c=>({html:shapeSVG(c[1],c[0][1]),ok:c[0]===tc&&c[1]===ts,say:`${c[0][0]} ${c[1]}`})),win:`That's the ${tc[0]} ${ts}!`};
+}
+function qListen(level){
+  const cat=pick(Object.keys(VOCAB)),t=pick(VOCAB[cat]),n=level==="big"?4:3;
+  const opts=shuffle([t,...sample(VOCAB[cat].filter(x=>x!==t),n-1)]);
+  if(level==="big")return {say:`Read the word, then find it!`,replay:t[0],text:`Find the picture for this word`,show:`<span class="big-word">${t[0]}</span>`,
+    opts:opts.map(o=>({html:`<span class="e">${o[1]}</span>`,ok:o===t,say:o[0]})),win:`Yes! ${t[0]}!`};
+  return {say:`Find the ${t[0]}!`,text:`Find the <b>${t[0]}</b>!`,show:"",
+    opts:opts.map(o=>({html:`<span class="e">${o[1]}</span>`,ok:o===t,say:o[0]})),win:`That's the ${t[0]}!`};
+}
+const GEN={letters:qLetters,numbers:qNumbers,shapes:qShapes,listen:qListen};
+
+/* ---------- round engine ---------- */
+const ROUND=6;
+let R=null; // {act, i, results[], firstTry, q, busy}
+function startRound(act){
+  R={act,i:0,results:[],first:true,busy:false};
+  if(act==="memory")return renderMemory();
+  nextQ();
+}
+function gameHeader(){
+  return `<div class="bar"><button class="iconbtn" data-go="home" aria-label="Stop playing">${ICON.close}</button>
+   <div class="grow"><div class="dots">${Array.from({length:ROUND},(_,k)=>`<i class="${k<R.results.length?(R.results[k]?"on":"miss"):k===R.i?"now":""}"></i>`).join("")}</div></div><span style="width:48px"></span></div>`;
+}
+function nextQ(){
+  if(R.i>=ROUND)return finishRound(R.results.filter(Boolean).length);
+  R.first=true;R.busy=false;
+  if(R.act==="spell")return renderSpell();
+  const q=GEN[R.act](me().level);R.q=q;
+  app.innerHTML=`<div class="game">${gameHeader()}
+   <div class="prompt">${frogSVG("small")}<div class="bubble">${q.text}</div><button class="say" data-replay="1" aria-label="Hear it again">${ICON.speak}</button></div>
+   <div class="show">${q.show}</div>
+   <div class="opts ${q.opts.length===4?"four":""}" style="--n:${q.opts.length}">${q.opts.map((o,k)=>`<button class="opt" data-opt="${k}">${o.html}</button>`).join("")}</div></div>`;
+  speak(q.say);
+}
+function answer(k,btn){
+  if(R.busy)return;const o=R.q.opts[k];
+  if(o.ok){R.busy=true;btn.classList.add("right");sfx.good();R.results.push(R.first);
+    speak(`${pick(PRAISE)} ${R.q.win||""}`);setTimeout(()=>{R.i++;nextQ()},1500);}
+  else{if(btn.classList.contains("wrong"))return;R.first=false;btn.classList.add("wrong");sfx.bad();speak(`${o.say}. ${pick(TRY)}`)}
+}
+
+/* spelling */
+function renderSpell(){
+  const big=me().level==="big";const w=pick(big?WORDS_BIG:WORDS_LITTLE);
+  const letters=w[0].split("");const extra=big?sample("ABCDEFGHIJKLMNOPRSTUW".split("").filter(c=>!letters.includes(c)),2):[];
+  R.q={word:w[0],emoji:w[1],pos:0,tiles:shuffle([...letters,...extra]).map((c,i)=>({c,i,used:false}))};
+  app.innerHTML=`<div class="game">${gameHeader()}
+   <div class="prompt">${frogSVG("small")}<div class="bubble">Spell <b>${w[0].toLowerCase()}</b></div><button class="say" data-replay="1" aria-label="Hear it again">${ICON.speak}</button></div>
+   <div class="show"><span class="big-pic">${w[1]}</span></div>
+   <div class="slots">${letters.map((_,k)=>`<div class="slot ${k===0?"next":""}" id="slot${k}"></div>`).join("")}</div>
+   <div class="tiles">${R.q.tiles.map(t=>`<button class="tile" data-tile="${t.i}">${t.c}</button>`).join("")}</div></div>`;
+  speakSpell();
+}
+function speakSpell(){const w=R.q.word.toLowerCase();speak(`Let's spell ${w}. ${w}. ${R.q.pos<R.q.word.length?`Find the letter ${R.q.word[R.q.pos]}.`:""}`)}
+function tapTile(i,btn){
+  if(R.busy)return;const q=R.q,t=q.tiles.find(x=>x.i===i);if(t.used)return;
+  if(t.c===q.word[q.pos]){
+    t.used=true;btn.classList.add("used");sfx.tap();
+    const s=$("#slot"+q.pos);s.textContent=t.c;s.classList.add("filled");s.classList.remove("next");q.pos++;
+    if(q.pos<q.word.length){$("#slot"+q.pos).classList.add("next");speak(t.c)}
+    else{R.busy=true;sfx.good();R.results.push(R.first);speak(`${q.word.split("").join(", ")}. ${q.word.toLowerCase()}! ${pick(PRAISE)}`);setTimeout(()=>{R.i++;nextQ()},2600)}
+  }else{R.first=false;btn.classList.remove("wrong");void btn.offsetWidth;btn.classList.add("wrong");sfx.bad();speak(`That's ${t.c}. We need ${q.word[q.pos]}.`)}
+}
+
+/* memory */
+let M=null;
+function renderMemory(){
+  const big=me().level==="big",pairs=big?8:6;
+  const pool=[...VOCAB.animals,...VOCAB.food].map(x=>x);
+  const chosen=sample(pool,pairs);
+  M={cards:shuffle([...chosen,...chosen]).map((c,i)=>({w:c[0],e:c[1],i,up:false,done:false})),open:[],moves:0,found:0,pairs,lock:false};
+  const cols=big?4:4;
+  app.innerHTML=`<div class="game"><div class="bar"><button class="iconbtn" data-go="home" aria-label="Stop playing">${ICON.close}</button><div class="grow" style="text-align:center;font-family:var(--display);font-weight:800;font-size:20px" id="memstat">Find the pairs!</div><span style="width:48px"></span></div>
+   <div class="mem" style="--cols:${cols}">${M.cards.map(c=>`<button class="card" data-card="${c.i}" aria-label="Card"><span class="in"><span class="f"></span><span class="b">${c.e}<small>${c.w}</small></span></span></button>`).join("")}</div></div>`;
+  speak("Flip two cards. Can you find a matching pair?");
+}
+function flip(i,el){
+  const c=M.cards[i];if(M.lock||c.up||c.done)return;
+  c.up=true;el.classList.add("up");sfx.flip();speak(c.w);M.open.push(c);
+  if(M.open.length===2){
+    M.moves++;const[a,b]=M.open;M.lock=true;
+    if(a.w===b.w){setTimeout(()=>{[a,b].forEach(x=>{x.done=true;document.querySelector(`[data-card="${x.i}"]`).classList.add("done")});M.open=[];M.lock=false;M.found++;sfx.good();
+      $("#memstat").textContent=`${M.found} of ${M.pairs} pairs`;
+      if(M.found===M.pairs){const ideal=M.pairs,stars=M.moves<=ideal*1.5?6:M.moves<=ideal*2?5:M.moves<=ideal*2.6?4:3;setTimeout(()=>finishRound(stars,`You found every pair in ${M.moves} turns!`),700)}
+      else speak(`${pick(PRAISE)} You matched the ${a.w}!`)},500)}
+    else setTimeout(()=>{[a,b].forEach(x=>{x.up=false;document.querySelector(`[data-card="${x.i}"]`).classList.remove("up")});M.open=[];M.lock=false},1100);
+  }
+}
+
+/* end of round */
+function finishRound(stars,extra){
+  const p=me(),act=R.act,before=Math.floor(p.stars/STARS_PER_STICKER);
+  p.stars+=stars;const st=p.stats[act]||(p.stats[act]={played:0,correct:0,total:0});
+  st.played++;st.correct+=stars;st.total+=ROUND;save();
+  const after=Math.min(STICKERS.length,Math.floor(p.stars/STARS_PER_STICKER));
+  const newStk=after>Math.min(STICKERS.length,before)?STICKERS[after-1]:null;
+  const head=stars>=6?"Perfect!":stars>=4?"Great hopping!":"Nice work!";
+  app.innerHTML=`<div class="center">${frogSVG("","wow")}<h1>${head}</h1>
+   ${extra?`<p style="margin:0">${esc(extra)}</p>`:""}
+   <div class="earned">${Array.from({length:ROUND},(_,k)=>k<stars?starSVG().replace("<svg",`<svg style="animation-delay:${k*.15}s"`):starSVG("#E3EEEC")).join("")}</div>
+   <p style="margin:0;font-family:var(--display);font-weight:800;font-size:22px">You earned ${stars} ${stars===1?"star":"stars"}!</p>
+   ${newStk?`<div class="newsticker"><span>${newStk}</span>New sticker!</div>`:""}
+   <div class="btnrow"><button class="btn" data-play="${act}">Play again</button><button class="btn alt" data-go="home">Home</button></div></div>`;
+  sfx.win();confetti();speak(`${head} You earned ${stars} stars!${newStk?" And a new sticker!":""}`);
+}
+
+/* ---------- events ---------- */
+function go(where){
+  if(where==="who")return renderWho();
+  if(!me())return renderWho();
+  ({home:renderHome,stickers:renderStickers,gate:renderGate,parent:renderParent}[where]||renderHome)();
+}
+app.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+  if(d.go){sfx.tap();return go(d.go)}
+  if(d.kid){S.current=d.kid;save();sfx.tap();return renderHome()}
+  if(d.play){sfx.tap();return startRound(d.play)}
+  if(d.opt!==undefined)return answer(+d.opt,b);
+  if(d.replay){return R.act==="spell"?speakSpell():speak(R.q.replay?R.q.replay:R.q.say)}
+  if(d.tile!==undefined)return tapTile(+d.tile,b);
+  if(d.card!==undefined)return flip(+d.card,b);
+  if(d.sticker!==undefined){sfx.good();b.animate?.([{transform:"scale(1)"},{transform:"scale(1.25) rotate(-8deg)"},{transform:"scale(1)"}],{duration:400});return}
+  if(d.pin!==undefined){
+    const k=d.pin,show=$("#pinshow");
+    if(k==="⌫")gate.v=gate.v.slice(0,-1);
+    else if(k==="OK"){if(+gate.v===gate.a+gate.b)return renderParent();gate.v="";show.textContent="Try again";return}
+    else if(gate.v.length<3)gate.v+=k;
+    show.textContent=gate.v||" ";return;
+  }
+  if(d.level){const[id,l]=d.level.split(":");S.profiles.find(p=>p.id===id).level=l;save();return renderParent()}
+  if(d.set){const[k,v]=d.set.split(":");S.settings[k]=k==="rate"?+v:v==="1";save();if(k==="voice"&&v==="1")speak("Hi! I'm Juniper.");return renderParent()}
+  if(d.add){const id="p"+Date.now();S.profiles.push({id,name:"New player",level:"little",color:AVA_COLORS[S.profiles.length%AVA_COLORS.length],stars:0,stats:{}});save();renderParent();const f=$("#name-"+id);f&&(f.focus(),f.select());return}
+  if(d.del){S.profiles=S.profiles.filter(p=>p.id!==d.del);if(!me())S.current=S.profiles[0].id;save();return renderParent()}
+  if(d.reset==="ask"){b.textContent="Tap again to confirm";b.dataset.reset="yes";return}
+  if(d.reset==="yes"){const p=me();p.stars=0;p.stats={};save();return renderParent()}
+});
+app.addEventListener("input",e=>{const id=e.target.dataset.name;if(!id)return;const p=S.profiles.find(x=>x.id===id);p.name=e.target.value.slice(0,16)||"Player";save();
+  const av=e.target.closest(".row").querySelector(".ava");if(av)av.textContent=(p.name.trim()[0]||"?").toUpperCase()});
+
+/* boot */
+if(S.current&&me())renderHome();else renderWho();
+
+/* offline support when hosted (ignored where service workers aren't allowed) */
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})});
+}
+})();
+</script>
+
+</body>
+</html>
